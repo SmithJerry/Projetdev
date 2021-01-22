@@ -1,0 +1,236 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/login.css}">
+
+</head>
+<body>
+
+<div  align="center" class="center-block">
+
+    <div  align="center" class="header">
+
+            <img class="ml020rem" data-rateLevel="1" th:src="@{/images/zshLogo.png}" width="77px;">
+            <span class="ml030rem fs028rem" style="font-size:35px">单片机课程考试系统</span>
+
+
+
+    </div>
+
+
+
+    <div class="main">
+        <div id="div1">
+            <ul class="warp" id="warp">
+                <li style='opacity:1;'><img th:src="@{/images/001.jpg}" th:width="529" height="393" alt=""></li>
+                <li><img th:src="@{/images/02.jpg}" alt=""></li>
+                <li><img th:src="@{/images/03.jpg}" alt=""></li>
+            </ul>
+        </div>
+        <div styl="float:right;">
+            <div class="login_form">
+                <span class="tab_1"></span>
+                <h3>用户登录</h3>
+                <p class="tip">用户名不能为空</p>
+
+                <form class="form_input">
+                    <div>
+                        <span class="user_input"></span>
+                        <input type="text" placeholder="请输入学工号" class="input01" id="loginName">
+                        <img th:src="@{/images/x_icon.png}" class="clear_icon">
+                    </div>
+
+                    <div>
+                        <span class="pass_input"></span>
+                        <input type="password" placeholder="请输入密码" class="input02" id="password">
+                    </div>
+
+                    <p style="height: 30px;width: 100%;"><span class="tishi" style="display: none;font-size: 14px;color: red;">输入的用户名错误！</span></p>
+                    <p class="qxsq">
+                        <span style="float:right; color:#333;">忘记密码？</span>	<span id="sprycheckbox1">
+		 						<input type="checkbox" name="checkbox1" id="checkbox1">
+	 						<span class="checkboxRequiredMsg">Please make a selection.</span></span>记住用户名 </p>
+
+
+
+
+                    <div >
+                        <button type="button" class="login_btn">登录</button>
+
+                        <br/>
+                        <!-- Indicates a successful or positive action -->
+                        <button type="button" href="/account/register">注册</button>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="login_form1">
+                <span class="tab_2"></span>
+                <h3>
+                    用户登录
+                </h3>
+
+                <p>使用二维码扫描</p>
+                <div style="text-align:center;">
+                    <img th:src="@{/images/Code.png}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+<div style="text-align:center;height:24px;background: rgba(255,255,255,0.3);position:fixed;z-index:-1;bottom:0;width:100%;font-size:14px;">
+    版权所有：西安科技大学   陕ICP备10002064号</div>
+
+
+<script type="text/javascript" th:src="@{/js/common/jquery-1.9.0.js}"></script>
+<script type="text/javascript">
+    $(".tab_1").click(function(){
+        $(".login_form1").show();
+        $(".login_form").hide();
+    });
+
+
+    $(".tab_2").click(function(){
+        $(".login_form").show();
+        $(".login_form1").hide();
+    })
+
+    //-----------------轮播
+
+
+
+
+    //---------------验证
+
+    $(function(){
+        $(".login_btn").click(function(){
+
+            var loginName = $("#loginName").val();
+            var password = $("#password").val();
+
+            if(loginName=="" || password ==""){
+                $(".tip").html("用户名和密码不能为空");
+                $(".ti p").css("display","block");
+                return;
+            }else{
+                // 异步校验账号密码
+
+                var url = "/account/validataAccount";
+                var args = {loginName:loginName,password:password};
+                $.post(url,args,function(data){
+
+                    if(data == "success"){
+                        // 登录成功 跳转页面
+                        window.location.href="/index";
+
+                    }else {
+
+                        $(".tip").html("用户名或密码错误");
+                        $(".tip").css("display","block");
+                    }
+
+                    console.log(data)
+                });
+
+            }
+
+
+        })
+
+    })
+
+
+
+    //------------验证
+
+
+    $(document).ready(function(){//获取焦点事件
+        $(".input01").focus(function(){
+            $(".tishi").css("display","none");
+            $(".tip").css("display","none")
+        });
+//			    $(".input01").blur(function(){//失去焦点事件
+
+//			    });
+    });
+    //===========轮播图===========
+    function getStyle(DOM,name){
+        if(DOM.currentStyle){
+            return DOM.currentStyle[name];
+        }else{
+            return getComputedStyle(DOM,false)[name];
+        }
+    }
+    function move(DOM,attr,target){
+        clearInterval(DOM.timer)
+        DOM.timer=setInterval(function(){
+            if(attr=='opacity'){
+
+                var cur=Math.round(parseFloat(getStyle(DOM,attr))*100)
+
+            }else{
+
+                var cur=parseInt(getStyle(DOM,attr));
+
+            }
+            //alert(cur)
+            //console.log(cur)
+            var speed=(target-cur)/6;
+            speed=speed>0?Math.ceil(speed):Math.floor(speed);
+
+            if(cur==target){
+                clearInterval(DOM.timer)
+            }else{
+                if(attr=='opacity'){
+
+                    DOM.style.filter='alpha(opacity:'+(cur+speed)+')'
+                    DOM.style.opacity=(cur+speed)/100
+                }else{
+
+                    DOM.style[attr]=cur+speed+'px';
+
+                }
+            }
+
+        },30)
+    }
+    window.onload = function(){
+        var Owarp = document.getElementById("warp");
+        var Oli = Owarp.children;
+        var timer = null;
+        var nowIndext = 0;
+        function imgLocation(){
+            for(var i= 0; i<Oli.length; i++){
+                Oli[i].style.opacity = 0;
+            }
+            if(nowIndext == Oli.length-1){
+                nowIndext = 0;
+                Oli[Oli.length-1].style.opacity = 0;
+                move(Oli[Oli.length-1], "opacity", 0)
+                move(Oli[nowIndext], "opacity", 100)
+
+            }else{
+                nowIndext++;
+                Oli[nowIndext-1].style.opacity = 1;
+                move(Oli[nowIndext-1], "opacity", 0)
+                move(Oli[nowIndext], "opacity", 100)
+            }
+
+        }
+        setInterval(imgLocation,2000)
+    }
+
+
+
+
+</script>
+</body>
+</html>
